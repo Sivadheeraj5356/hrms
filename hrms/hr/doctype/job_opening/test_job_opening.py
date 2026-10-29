@@ -49,6 +49,25 @@ class TestJobOpening(HRMSTestSuite):
 		opening_1.status = "Closed"
 		opening_1.save()
 
+	def test_route_is_url_safe_for_special_characters(self):
+		# company names can contain apostrophes, ampersands etc. (see #5353)
+		make_company("_Test Opening's Company & Co.", "_TOCC")
+		make_employee(
+			"test_job_opening_route@example.com",
+			company="_Test Opening's Company & Co.",
+			designation="Designer",
+		)
+
+		opening = get_job_opening(
+			job_title="Designer's Assistant (Night & Day)",
+			company="_Test Opening's Company & Co.",
+		)
+		opening.insert()
+
+		# route segments must not carry URL-unsafe characters from the company or job title
+		self.assertTrue(opening.route.startswith("jobs/"))
+		self.assertNotRegex(opening.route, r"[~!@#$%^&*+()<>,.\"'?]")
+
 	def test_close_job_opening_after_employee_creation(self):
 		staffing_plan = frappe.get_doc(
 			{
