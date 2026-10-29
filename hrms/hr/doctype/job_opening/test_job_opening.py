@@ -59,13 +59,15 @@ class TestJobOpening(HRMSTestSuite):
 		)
 
 		opening = get_job_opening(
-			job_title="Designer's Assistant (Night & Day)",
+			job_title="Designer's Assistant (Night & Day/Remote)",
 			company="_Test Opening's Company & Co.",
 		)
 		opening.insert()
 
 		# route segments must not carry URL-unsafe characters from the company or job title
 		self.assertTrue(opening.route.startswith("jobs/"))
+		# a `/` in the company or job title must not add a bogus path segment
+		self.assertEqual(len(opening.route.split("/")), 3)
 		self.assertNotRegex(opening.route, r"[~!@#$%^&*+()<>,.\"'?]")
 
 	def test_close_job_opening_after_employee_creation(self):
