@@ -8,6 +8,7 @@ import frappe
 from frappe import _
 from frappe.model.naming import set_name_from_naming_options
 from frappe.utils import get_link_to_form, getdate, pretty_date
+from frappe.website.utils import cleanup_page_name
 from frappe.website.website_generator import WebsiteGenerator
 
 from hrms.hr.doctype.staffing_plan.staffing_plan import (
@@ -64,7 +65,7 @@ class JobOpening(WebsiteGenerator):
 
 	def validate(self):
 		if not self.route:
-			self.route = f"jobs/{frappe.scrub(self.company)}/{frappe.scrub(self.job_title).replace('_', '-')}"
+			self.route = f"jobs/{cleanup_page_name(self.company)}/{cleanup_page_name(self.job_title)}"
 		self.update_closing_date()
 		self.validate_dates()
 		self.validate_current_vacancies()
