@@ -38,6 +38,14 @@ $(() => {
 		update_params(get_new_params(".desktop-filters"));
 	});
 
+	// filter live while typing, not only on Enter/clear (see #5353)
+	$("#search-box").on(
+		"input",
+		frappe.utils.debounce(function () {
+			$(this).trigger("search");
+		}, 500),
+	);
+
 	$("#search-box").keyup(function (e) {
 		if (e.keyCode == 13) {
 			$(this).trigger("search");
